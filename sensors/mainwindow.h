@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QtSensors>
+#include <QTimer>
 
 namespace Ui {
 class MainWindow;
@@ -17,6 +19,11 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    QSensor *sensor;
+    QTimer *timer;
+
+private slots:
+    void timeOut();
 };
 
 #endif // MAINWINDOW_H
