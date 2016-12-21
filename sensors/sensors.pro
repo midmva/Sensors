@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sensors
+QT       += core gui sensors multimedia multimediawidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -13,9 +13,11 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    camerasurfacewidget.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    camerasurfacewidget.h
 
 FORMS    += mainwindow.ui
 
