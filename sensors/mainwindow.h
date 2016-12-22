@@ -5,6 +5,7 @@
 #include <QtSensors>
 #include <QTimer>
 #include <QCamera>
+#include <QProgressBar>
 #include <QCameraImageCapture>
 #include <camerasurfacewidget.h>
 
@@ -26,6 +27,9 @@ private:
     QTimer *timer;
     QCamera *camera;
     CameraSurfaceWidget *viewfinder;
+    qreal filtered[3];
+    QList<QProgressBar*> *list;
+    int counter;
 
 private slots:
     void setCamera(const QCameraInfo &cameraInfo);

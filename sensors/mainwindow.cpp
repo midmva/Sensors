@@ -3,16 +3,25 @@
 #include <QStackedWidget>
 #include <QCameraViewfinder>
 #include <QCameraInfo>
+#include <QHBoxLayout>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
+    counter(0),
     ui(new Ui::MainWindow)
 {
+    filtered[0] = 0;
+    filtered[1] = 0;
+    filtered[2] = 0;
     ui->setupUi(this);
+    list = new QList<QProgressBar*>();
+    list->append(ui->x_l);
+    list->append(ui->x_r);
+    list->append(ui->y_l);
+    list->append(ui->y_r);
+    list->append(ui->z_l);
+    list->append(ui->z_r);
     //ui->centralWidget->setLayout(ui->gridLayout);
-
-
-
 
     QWidget *viewfinderPage;
     QStackedWidget *stackedWidget;
@@ -23,18 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     sizePolicy.setVerticalStretch(0);
     sizePolicy.setHeightForWidth(stackedWidget->sizePolicy().hasHeightForWidth());
     stackedWidget->setSizePolicy(sizePolicy);
-//    QPalette palette;
-//    QBrush brush(QColor(255, 255, 255, 255));
-//    brush.setStyle(Qt::SolidPattern);
-//    palette.setBrush(QPalette::Active, QPalette::Base, brush);
-//    QBrush brush1(QColor(145, 145, 145, 255));
-//    brush1.setStyle(Qt::SolidPattern);
-//    palette.setBrush(QPalette::Active, QPalette::Window, brush1);
-//    palette.setBrush(QPalette::Inactive, QPalette::Base, brush);
-//    palette.setBrush(QPalette::Inactive, QPalette::Window, brush1);
-//    palette.setBrush(QPalette::Disabled, QPalette::Base, brush1);
-//    palette.setBrush(QPalette::Disabled, QPalette::Window, brush1);
-//    stackedWidget->setPalette(palette);
+
     stackedWidget->setContentsMargins(1,1,1,1);
     viewfinderPage = new QWidget();
     viewfinderPage->setObjectName(QStringLiteral("viewfinderPage"));
@@ -47,18 +45,20 @@ MainWindow::MainWindow(QWidget *parent) :
     ver_box->addWidget(viewfinder);
 
     stackedWidget->addWidget(viewfinderPage);
+
     QVBoxLayout *hor_box = new QVBoxLayout();
     hor_box->addWidget(stackedWidget);
-    hor_box->addWidget(ui->gridLayoutWidget);
-    hor_box->setContentsMargins(3,3,3,3);
     ui->centralWidget->setLayout(hor_box);
+    //hor_box->addWidget(ui->gridLayoutWidget);
+    QWidget *widget = new QWidget(ui->centralWidget);
+    widget->setLayout(ui->gridLayout);
+    widget->setFixedSize(500,500);
+    widget->setStyleSheet("QWidget{background-color: rgba(0,0,0,0)}");
+    widget->show();
+    hor_box->setContentsMargins(3,3,3,3);
 
 
-
-    //ui->verticalLayout->setParent(this);
     setCamera(QCameraInfo::defaultCamera());
-
-
 
     sensor = new QSensor("QAccelerometer");
     timer = new QTimer();
@@ -82,12 +82,7 @@ void MainWindow::setCamera(const QCameraInfo &cameraInfo)
 
     connect(camera, SIGNAL(error(QCamera::Error)), this, SLOT(displayCameraError()));
 
-
     camera->setViewfinder(viewfinder->surface());//! Эту строчку пришлось изменить.
-
-
-//    ui->captureWidget->setTabEnabled(0, (camera->isCaptureModeSupported(QCamera::CaptureStillImage)));
-//    ui->captureWidget->setTabEnabled(1, (camera->isCaptureModeSupported(QCamera::CaptureVideo)));
 
     QCamera::CaptureModes captureMode = QCamera::CaptureVideo;
 
@@ -97,34 +92,19 @@ void MainWindow::setCamera(const QCameraInfo &cameraInfo)
 }
 
 
-
 void MainWindow::timeOut(){
+
     QSensorReading *reading = sensor->reading();
-    qreal x = reading->property("x").value<qreal>();
-    if(x<0){
-        ui->x_l->setValue(ui->x_l->minimum()-x*10);
-        ui->x_r->setValue(ui->x_r->minimum());
-    }
-    else{
-        ui->x_r->setValue(x*10);
-        ui->x_l->setValue(ui->x_l->minimum());
-    }
-    qreal y = reading->property("y").value<qreal>();
-    if(y<0){
-        ui->y_l->setValue(ui->y_l->minimum()-y*10);
-        ui->y_r->setValue(ui->y_r->minimum());
-    }
-    else{
-        ui->y_r->setValue(y*10);
-        ui->y_l->setValue(ui->y_l->minimum());
-    }
-    qreal z = reading->property("z").value<qreal>();
-    if(z<0){
-        ui->z_l->setValue(ui->z_l->minimum() - z*10);
-        ui->z_r->setValue(ui->z_r->minimum());
-    }
-    else{
-        ui->z_r->setValue(z*10);
-        ui->z_l->setValue(ui->z_l->minimum());
+    filtered[0] += reading->property("x").value<qreal>();
+    filtered[1] += reading->property("y").value<qreal>();
+    filtered[2] += reading->property("z").value<qreal>();
+    if (counter++>4){
+        for(int i = 0; i<3;i++){
+            filtered[i] /= counter;
+            list->at(i*2)->setValue(filtered[i]>0?list->at(i*2)->minimum():list->at(i*2)->minimum()-filtered[i]*10);
+            list->at(i*2+1)->setValue(filtered[i]>0?filtered[i]*10:list->at(i*2+1)->minimum());
+            filtered[i] = 0;
+        }
+        counter = 0;
     }
 }
