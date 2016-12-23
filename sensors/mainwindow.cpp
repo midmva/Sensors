@@ -60,11 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setCamera(QCameraInfo::defaultCamera());
 
-    sensor = new QSensor("QAccelerometer");
-    timer = new QTimer();
-    QObject::connect(timer,SIGNAL(timeout()),this,SLOT(timeOut()));
-    sensor->start();
-    timer->start(10);
+
 }
 
 MainWindow::~MainWindow()
@@ -92,19 +88,10 @@ void MainWindow::setCamera(const QCameraInfo &cameraInfo)
 }
 
 
-void MainWindow::timeOut(){
-
-    QSensorReading *reading = sensor->reading();
-    filtered[0] += reading->property("x").value<qreal>();
-    filtered[1] += reading->property("y").value<qreal>();
-    filtered[2] += reading->property("z").value<qreal>();
-    if (counter++>4){
-        for(int i = 0; i<3;i++){
-            filtered[i] /= counter;
-            list->at(i*2)->setValue(filtered[i]>0?list->at(i*2)->minimum():list->at(i*2)->minimum()-filtered[i]*10);
-            list->at(i*2+1)->setValue(filtered[i]>0?filtered[i]*10:list->at(i*2+1)->minimum());
-            filtered[i] = 0;
-        }
-        counter = 0;
+void MainWindow::setSensorData(QList<qreal> *data){
+    for(int i = 0; i<3;i++){
+        qreal value = data->at(i);
+        list->at(i*2)->setValue(value>0?list->at(i*2)->minimum():list->at(i*2)->minimum()-value*10);
+        list->at(i*2+1)->setValue(value>0?value*10:list->at(i*2+1)->minimum());
     }
 }

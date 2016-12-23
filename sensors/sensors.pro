@@ -14,10 +14,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    camerasurfacewidget.cpp
+    camerasurfacewidget.cpp \
+    threadsensors.cpp
 
 HEADERS  += mainwindow.h \
-    camerasurfacewidget.h
+    camerasurfacewidget.h \
+    threadsensors.h
 
 FORMS    += mainwindow.ui
 

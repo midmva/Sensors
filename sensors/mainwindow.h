@@ -2,8 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QtSensors>
-#include <QTimer>
+
 #include <QCamera>
 #include <QProgressBar>
 #include <QCameraImageCapture>
@@ -21,10 +20,12 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+public slots:
+    void setSensorData(QList<qreal> *list);
+
 private:
     Ui::MainWindow *ui;
-    QSensor *sensor;
-    QTimer *timer;
+
     QCamera *camera;
     CameraSurfaceWidget *viewfinder;
     qreal filtered[3];
@@ -33,7 +34,7 @@ private:
 
 private slots:
     void setCamera(const QCameraInfo &cameraInfo);
-    void timeOut();
+
 };
 
 #endif // MAINWINDOW_H
