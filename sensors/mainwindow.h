@@ -34,6 +34,10 @@ private:
 
 private slots:
     void setCamera(const QCameraInfo &cameraInfo);
+    void getFrame(const QVideoFrame& frame);
+
+signals:
+    void setFrame(const QVideoFrame& frame);
 
 };
 

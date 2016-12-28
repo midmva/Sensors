@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>337</width>
-    <height>222</height>
+    <height>340</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
       <x>60</x>
       <y>60</y>
       <width>198</width>
-      <height>140</height>
+      <height>160</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
@@ -120,6 +120,16 @@
       <widget class="QLabel" name="label_3">
        <property name="text">
         <string>Z Axis</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0" colspan="2">
+      <widget class="QLabel" name="counter">
+       <property name="text">
+        <string>TextLabel</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>

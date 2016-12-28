@@ -68,11 +68,16 @@ private:
     QVideoFrame::PixelFormat _framePixelFormat;
     //Шейдер, который рисует прямоугольник
     QOpenGLShaderProgram* _shaderProgram;
+    QImage imageFromVideoFrame(const QVideoFrame& buffer) const;
 
     void _initializeShaderProgram(QVideoFrame::PixelFormat pixelFormat);
     void _initializeShaderProgram(const QString& rgb = "rgb");
     void initializeGL() Q_DECL_OVERRIDE;//вызввается при инициализации
     void paintGL() Q_DECL_OVERRIDE;//отрисовке
+
+signals:
+    void setFrame(const QVideoFrame& frame);
+    void setImage(QImage image);
 };
 
 #endif // QCAMERASURFACEWIDGET_H

@@ -180,8 +180,10 @@ void CameraSurfaceWidget::paintGL()
         //И эта часть выше не нужна для винды. Но, главное, она там ничего не сломает.
     } else {
         QVideoFrame& frame = _surface->frame();
+        emit setFrame(frame);
+        //emit setImage(imageFromVideoFrame(frame));
         GLuint texture = 0;//Здесь будет тектура кадры. А появиться она может по-разному.
-/*        if (frame.handleType() == QAbstractVideoBuffer::NoHandle) {//Если присылают массив
+        if (frame.handleType() == QAbstractVideoBuffer::NoHandle) {//Если присылают массив
             if (_frameTexture == 0) {//создаем свою текстуру, если еще не создали
                 _glFuncs->glGenTextures(1, &_frameTexture);
                 _frameSize = QSize(0, 0);
@@ -208,7 +210,7 @@ void CameraSurfaceWidget::paintGL()
             }
             _glFuncs->glGenerateMipmap(GL_TEXTURE_2D);//если это не сделать, не будет видно изменений
             texture = _frameTexture;
-        } else*/ if (frame.handleType() == QAbstractVideoBuffer::GLTextureHandle) {//Если присылаеют текстуру
+        } else if (frame.handleType() == QAbstractVideoBuffer::GLTextureHandle) {//Если присылаеют текстуру
             if (_frameTexture) {//Если создали текстуру,
                 _glFuncs->glDeleteTextures(1, &_frameTexture);//то она уже не нужна
                 _frameTexture = 0;
@@ -242,4 +244,30 @@ void CameraSurfaceWidget::paintGL()
     }
 
     update();//если этого здесь не сделать, то на андроиде не будет обновления окна
+}
+
+
+QImage CameraSurfaceWidget::imageFromVideoFrame(const QVideoFrame& buffer) const
+{
+    QImage img;
+    QVideoFrame frame(buffer);  // make a copy we can call map (non-const) on
+    frame.map(QAbstractVideoBuffer::ReadOnly);
+    QImage::Format imageFormat = QVideoFrame::imageFormatFromPixelFormat(
+                frame.pixelFormat());
+    // BUT the frame.pixelFormat() is QVideoFrame::Format_Jpeg, and this is
+    // mapped to QImage::Format_Invalid by
+    // QVideoFrame::imageFormatFromPixelFormat
+    if (imageFormat != QImage::Format_Invalid) {
+        img = QImage(frame.bits(),
+                     frame.width(),
+                     frame.height(),
+                     // frame.bytesPerLine(),
+                     imageFormat);
+    } else {
+        // e.g. JPEG
+        int nbytes = frame.mappedBytes();
+        img = QImage::fromData(frame.bits(), nbytes);
+    }
+    frame.unmap();
+    return img;
 }

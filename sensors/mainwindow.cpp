@@ -4,6 +4,7 @@
 #include <QCameraViewfinder>
 #include <QCameraInfo>
 #include <QHBoxLayout>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -41,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ver_box->setObjectName(QStringLiteral("gridLayout_5"));
     viewfinder = new CameraSurfaceWidget(viewfinderPage);
     viewfinder->setObjectName(QStringLiteral("viewfinder"));
+    connect(viewfinder,SIGNAL(setFrame(const QVideoFrame&)),this, SLOT(getFrame(const QVideoFrame&)));
 
     ver_box->addWidget(viewfinder);
 
@@ -94,4 +96,9 @@ void MainWindow::setSensorData(QList<qreal> *data){
         list->at(i*2)->setValue(value>0?list->at(i*2)->minimum():list->at(i*2)->minimum()-value*10);
         list->at(i*2+1)->setValue(value>0?value*10:list->at(i*2+1)->minimum());
     }
+}
+
+void MainWindow::getFrame(const QVideoFrame& frame){
+    static int counter = 0;
+    ui->counter->setText(QString::number(counter++));
 }
