@@ -27,7 +27,10 @@ void ThreadSensors::timeOut(){
         data.append(y/counter);
         data.append(z/counter);
         emit setSensorData(&data);
-        counter = x = y = z = 0;
+        counter = 0;
+        x = 0;
+        y = 0;
+        z = 0;
     }
 
 }

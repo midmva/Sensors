@@ -59,8 +59,10 @@ MainWindow::MainWindow(QWidget *parent) :
     widget->show();
     hor_box->setContentsMargins(3,3,3,3);
 
+    QList<QCameraInfo> list = QCameraInfo::availableCameras();
 
-    setCamera(QCameraInfo::defaultCamera());
+
+    setCamera(list.at(1));
 
 
 }
@@ -99,6 +101,12 @@ void MainWindow::setSensorData(QList<qreal> *data){
 }
 
 void MainWindow::getFrame(const QVideoFrame& frame){
-    static int counter = 0;
-    ui->counter->setText(QString::number(counter++));
+    emit setFrame(frame);
+//    static int counter = 0;
+
+//    ui->counter->setText(QString::number(counter++));
+}
+
+void MainWindow::slotGetFPS(const int count){
+    ui->counter->setText(QString::number(count));
 }

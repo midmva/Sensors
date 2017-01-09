@@ -22,6 +22,7 @@ public:
 
 public slots:
     void setSensorData(QList<qreal> *list);
+    void slotGetFPS(const int count);
 
 private:
     Ui::MainWindow *ui;
